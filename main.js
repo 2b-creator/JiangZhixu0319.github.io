@@ -53,6 +53,26 @@ function loadArticle(filename) {
                 document.getElementById('content').innerHTML = errorMsg.outerHTML + `<pre class="raw-markdown">${markdown}</pre>`;
             }
             hljs.highlightAll();
+
+    // 为所有pre元素添加复制按钮
+    document.querySelectorAll('pre').forEach(pre => {
+      const btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M19 21H8V7h11m0-2H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2m-3-4H4a2 2 0 0 0-2 2v14h2V3h12V1z"/></svg><span>复制代码</span>`;
+      
+      btn.onclick = () => {
+        const code = pre.querySelector('code')?.innerText || pre.innerText;
+        navigator.clipboard.writeText(code)
+          .then(() => {
+            btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M21 7L9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg><span>已复制！</span>`;
+            setTimeout(() => {
+              btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M19 21H8V7h11m0-2H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2m-3-4H4a2 2 0 0 0-2 2v14h2V3h12V1z"/></svg><span>复制代码</span>`;
+            }, 2000);
+          })
+          .catch(err => console.error('复制失败:', err));
+      };
+      pre.appendChild(btn);
+    });
             document.getElementById('articles-list').style.display = 'none';
             document.getElementById('pagination-container').style.display = 'none';
             document.getElementById('content').style.display = 'block';
@@ -73,6 +93,26 @@ function loadArticle(filename) {
     document.getElementById('content').style.display = 'block';
     document.getElementById('pagination-container').style.display = 'none';
     hljs.highlightAll();
+
+    // 为所有pre元素添加复制按钮
+    document.querySelectorAll('pre').forEach(pre => {
+      const btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M19 21H8V7h11m0-2H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2m-3-4H4a2 2 0 0 0-2 2v14h2V3h12V1z"/></svg>`;
+      
+      btn.onclick = () => {
+        const code = pre.querySelector('code')?.innerText || pre.innerText;
+        navigator.clipboard.writeText(code)
+          .then(() => {
+            btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M21 7L9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg>`;
+            setTimeout(() => {
+              btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M19 21H8V7h11m0-2H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2m-3-4H4a2 2 0 0 0-2 2v14h2V3h12V1z"/></svg>`;
+            }, 2000);
+          })
+          .catch(err => console.error('复制失败:', err));
+      };
+      pre.appendChild(btn);
+    });
 }
 
 // 初始化加载文章列表
