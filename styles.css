@@ -193,6 +193,14 @@ header nav a.active {
     overflow: hidden;
     margin-top: 0.5rem;
     font-size: 1.3em;
+    border: 1px solid transparent;
+}
+
+#articles-list .article-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.15);
+    border-color: rgba(52, 152, 219, 0.3);
+    z-index: 1;
 }
 
 @media (max-width: 768px) {
