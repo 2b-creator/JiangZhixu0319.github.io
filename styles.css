@@ -199,7 +199,7 @@ header nav a.active {
 #articles-list .article-card:hover {
     transform: translateY(-5px) scale(1.02);
     box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.15);
-    border-color: rgba(52, 152, 219, 0.3);
+
     z-index: 1;
 }
 
@@ -208,7 +208,7 @@ header nav a.active {
         padding: 0.5rem;
         box-shadow: 0 4px 18px -4px rgba(0, 0, 0, 0.12);
         border-width: 2px;
-        border-color: #3498db;
+
         margin-bottom: 0.75rem;
     }
 }
