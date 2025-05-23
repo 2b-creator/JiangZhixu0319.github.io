@@ -99,6 +99,42 @@ header nav a.active {
     padding: 30px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: relative;
+    margin-left: 280px;
+}
+
+#toc-sidebar {
+    position: fixed;
+    width: 260px;
+    top: 120px;
+    left: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#toc-sidebar .toc-item {
+    display: block;
+    padding: 8px 12px;
+    color: #2c3e50;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+#toc-sidebar .toc-item.level-2 {
+    padding-left: 24px;
+}
+
+#toc-sidebar .toc-item.level-3 {
+    padding-left: 36px;
+}
+
+#toc-sidebar .toc-item:hover {
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 4px;
 }
 
 /* Markdown样式 */
@@ -198,6 +234,69 @@ header nav a.active {
 
 #content table tr:nth-child(even) {
     background-color: #f8f8f8;
+}
+
+/* 大纲侧边栏样式 */
+#toc-sidebar {
+    top: 140px;
+    left: 40px;
+    right: auto;
+}
+
+#content {
+    margin-left: 300px;
+}
+
+#toc-sidebar {
+    position: fixed;
+    top: 120px;
+    right: 2%;
+    width: 260px;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+}
+
+.toc-item {
+    display: block;
+    padding: 8px 12px;
+    margin: 4px 0;
+    border-radius: 6px;
+    color: #2c3e50;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.toc-item.level-2 {
+    margin-left: 15px;
+    font-size: 0.95em;
+}
+
+.toc-item.level-3 {
+    margin-left: 30px;
+    font-size: 0.9em;
+}
+
+.toc-item:hover {
+    background: rgba(52, 152, 219, 0.1);
+    transform: translateX(4px);
+}
+
+@media (max-width: 1200px) {
+    #toc-sidebar {
+        display: none;
+    }
+}
+
+/* 滚动跟踪效果 */
+.toc-item.active {
+    background: #3498db;
+    color: white !important;
 }
 
 #content table tr:hover {

@@ -43,7 +43,24 @@ function loadArticle(filename) {
         })
         .then(markdown => {
             if (typeof marked !== 'undefined' && marked.parse) {
-                document.getElementById('content').innerHTML = marked.parse(markdown);
+                const renderer = {
+  heading(text, level) {
+    const escapedText = text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '-');
+    toc.push({ level, text, id: escapedText });
+    return `<h${level} id="${escapedText}">${text}</h${level}>`;
+  }
+};
+
+let toc = [];
+marked.use({ renderer });
+const contentHtml = marked.parse(markdown);
+document.getElementById('content').innerHTML = contentHtml;
+
+// 生成目录
+const tocContainer = document.getElementById('toc-sidebar');
+tocContainer.innerHTML = toc.map(item => 
+  `<a class="toc-item level-${item.level}" href="#${item.id}">${item.text}</a>`
+).join('');
             } else {
                 const errorMsg = ErrorHandler.createErrorElement(ErrorHandler.formatError('LIBRARY_LOAD', {
                     message: 'Markdown解析库加载失败',
