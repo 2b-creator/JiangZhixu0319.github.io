@@ -201,12 +201,33 @@ function setupPagination() {
 function updateArticlesDisplay() {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
-    const paginatedArticles = globalArticles.slice(startIndex, endIndex);
-
+    const articlesToShow = globalArticles.slice(startIndex, endIndex);
+    
+    // 缓存当前分页数据
+    localStorage.setItem('cachedPageData', JSON.stringify({
+        page: currentPage,
+        data: articlesToShow
+    }));
+    
     const articlesList = document.getElementById('articles-list');
     articlesList.innerHTML = '';
-
-    paginatedArticles.forEach(file => {
+    
+    articlesToShow.forEach(file => {
+        const img = document.createElement('img');
+        img.className = 'lazy';
+        img.dataset.src = file.cover || './default-cover.jpg';
+        img.alt = file.title;
+        
+        // 使用Intersection Observer实现懒加载
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.src = entry.target.dataset.src;
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        observer.observe(img);
         try {
             // 直接从JSON数据获取文章信息
             const { title, date, tags, excerpt } = file;
