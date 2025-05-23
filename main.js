@@ -35,7 +35,15 @@ async function loadArticlesList() {
 }
 
 // 加载单个文章
+// 在文章列表加载完成后隐藏大纲
+if (window.location.pathname === '/' || window.location.pathname.endsWith('index.html')) {
+  document.getElementById('toc-sidebar').style.display = 'none';
+}
+
+// 在文章加载时显示大纲
 function loadArticle(filename) {
+  document.body.classList.remove('home');
+  document.getElementById('toc-sidebar').style.display = 'block';
     fetch(`./articles/${filename}`)
         .then(response => {
             if (!response.ok) throw new Error('无法加载文章');
@@ -139,6 +147,11 @@ if (loadingIndicator) loadingIndicator.style.display = 'none';
 
 // 初始化加载加入DOM就绪检查
 document.addEventListener('DOMContentLoaded', () => {
+    // 首页状态判断
+    if (window.location.pathname === '/' || window.location.pathname.endsWith('index.html')) {
+      document.body.classList.add('home');
+    }
+
     const loadingIndicator = document.querySelector('.loading-indicator');
     const articlesListContainer = document.getElementById('articles-list-container');
 
