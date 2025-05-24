@@ -44,6 +44,8 @@ if (window.location.pathname === '/' || window.location.pathname.endsWith('index
 function loadArticle(filename) {
   document.body.classList.remove('home');
   document.getElementById('toc-sidebar').style.display = 'block';
+  // 滚动到页面顶部
+  window.scrollTo({ top: 0, behavior: 'smooth' });
     fetch(`./articles/${filename}`)
         .then(response => {
             if (!response.ok) throw new Error('无法加载文章');
@@ -138,6 +140,17 @@ tocContainer.innerHTML = toc.map(item =>
       };
       pre.appendChild(btn);
     });
+}
+
+// 返回主页函数
+function backToHome() {
+  document.body.classList.add('home');
+  document.getElementById('content').style.display = 'none';
+  document.getElementById('articles-list').style.display = 'block';
+  document.getElementById('pagination-container').style.display = 'block';
+  document.getElementById('toc-sidebar').style.display = 'none';
+  // 滚动到页面顶部
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // 初始化加载文章列表
