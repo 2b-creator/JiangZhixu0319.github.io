@@ -338,6 +338,7 @@ header nav a.active {
     margin-top: 0.5rem;
     font-size: 1.3em;
     border: 1px solid transparent;
+    user-select: text;
 }
 
 #articles-list .article-card:hover {

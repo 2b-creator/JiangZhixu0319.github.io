@@ -270,7 +270,14 @@ function updateArticlesDisplay() {
                 `;
             articlesList.appendChild(articleDiv);
             articleDiv.dataset.filename = file.filename;
-            articleDiv.addEventListener('click', () => loadArticle(file.filename));
+            articleDiv.addEventListener('click', (event) => {
+        // 检查是否有文本被选中
+        const selection = window.getSelection();
+        if (selection.toString().trim() === '') {
+            // 没有选中文本时才加载文章
+            loadArticle(file.filename);
+        }
+    });
         } catch (error) {
             console.error(error);
             document.querySelector('.loading-indicator').style.display = 'none';
