@@ -4,9 +4,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>姜祉旭的博客</title>
+  <meta name="description" content="JiangZhixu的个人博客">
+  <meta name="theme-color" content="#ffffff">
+  <title>JiangZhixu 的博客</title>
+
+  <!-- 预加载关键资源 -->
+  <link rel="preload" href="styles.css" as="style">
+  <link rel="preload" href="main.js" as="script">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" as="style">
+
+  <!-- 预连接第三方域名 -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
   <script>
@@ -31,7 +45,9 @@
   <script src="https://unpkg.com/marked@11.1.1/lib/marked.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-  <h1 class="blog-title">姜祉旭的博客</h1>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <h1 class="blog-title" onclick="backToHome()" style="cursor: pointer;">JiangZhixu 的博客</h1>
   <div id="articles-list-container">
     <div class="loading-indicator">
       <i class="fas fa-spinner fa-spin"></i>
@@ -42,6 +58,9 @@
   </div>
   </div>
   <div id="toc-sidebar"></div>
+<button class="toc-toggle" aria-label="切换目录">
+    <i class="fas fa-chevron-left"></i>
+</button>
 <div id="content" style="display:none;"></div>
   <script src="main.js"></script>
   </body>
