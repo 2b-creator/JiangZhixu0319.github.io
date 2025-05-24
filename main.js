@@ -126,6 +126,37 @@ if (window.location.pathname === '/' || window.location.pathname.endsWith('index
 }
 
 // 在文章加载时显示大纲
+// 初始化目录切换按钮
+function setupTocToggle() {
+    const tocToggle = document.querySelector('.toc-toggle');
+    const tocSidebar = document.getElementById('toc-sidebar');
+    const content = document.getElementById('content');
+    
+    // 从localStorage获取目录状态
+    const isTocCollapsed = localStorage.getItem('tocCollapsed') === 'true';
+    
+    if (isTocCollapsed) {
+        tocSidebar.classList.remove('visible');
+        content.classList.remove('with-toc');
+        tocToggle.classList.add('collapsed');
+    }
+    
+    tocToggle.addEventListener('click', () => {
+        const isVisible = tocSidebar.classList.contains('visible');
+        if (isVisible) {
+            tocSidebar.classList.remove('visible');
+            content.classList.remove('with-toc');
+            tocToggle.classList.add('collapsed');
+            localStorage.setItem('tocCollapsed', 'true');
+        } else {
+            tocSidebar.classList.add('visible');
+            content.classList.add('with-toc');
+            tocToggle.classList.remove('collapsed');
+            localStorage.setItem('tocCollapsed', 'false');
+        }
+    });
+}
+
 async function loadArticle(filename) {
   try {
     // 添加过渡动画
@@ -133,16 +164,17 @@ async function loadArticle(filename) {
     const content = document.getElementById('content');
     const articlesList = document.getElementById('articles-list-container');
     const tocSidebar = document.getElementById('toc-sidebar');
+    const tocToggle = document.querySelector('.toc-toggle');
     
     // 重置容器状态
     content.style.display = 'block';
     content.style.visibility = 'visible';
+    content.classList.add('with-toc');
     articlesList.style.display = 'none';
+    tocToggle.classList.add('show');
     
     // 确保大纲栏可见
-    tocSidebar.style.display = 'block';
-    tocSidebar.style.visibility = 'visible';
-    tocSidebar.style.opacity = '1';
+    tocSidebar.classList.add('visible');
 
     // 滚动到页面顶部和动画效果
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -341,12 +373,13 @@ function backToHome() {
   // 隐藏文章内容和大纲
   const content = document.getElementById('content');
   const tocSidebar = document.getElementById('toc-sidebar');
+  const tocToggle = document.querySelector('.toc-toggle');
   
   content.style.display = 'none';
   content.style.visibility = 'hidden';
-  tocSidebar.style.display = 'none';
-  tocSidebar.style.visibility = 'hidden';
-  tocSidebar.style.opacity = '0';
+  content.classList.remove('with-toc');
+  tocSidebar.classList.remove('visible');
+  tocToggle.classList.remove('show');
   
   // 显示文章列表
   document.getElementById('articles-list').style.display = 'block';
@@ -362,6 +395,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.location.pathname === '/' || window.location.pathname.endsWith('index.html')) {
         document.body.classList.add('home');
     }
+    
+    // 初始化目录切换功能
+    setupTocToggle();
 
     const loadingIndicator = document.querySelector('.loading-indicator');
     const articlesListContainer = document.getElementById('articles-list-container');
