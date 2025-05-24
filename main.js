@@ -66,6 +66,17 @@ marked.use({ renderer });
 const contentHtml = marked.parse(markdown);
 document.getElementById('content').innerHTML = contentHtml;
 
+// 使用 KaTeX 渲染数学公式
+renderMathInElement(document.getElementById('content'), {
+    delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false},
+        {left: '\\[', right: '\\]', display: true},
+        {left: '\\(', right: '\\)', display: false}
+    ],
+    throwOnError: false
+});
+
 // 生成目录
 const tocContainer = document.getElementById('toc-sidebar');
 tocContainer.innerHTML = toc.map(item => 
