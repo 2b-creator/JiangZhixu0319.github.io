@@ -131,14 +131,22 @@ function setupTocToggle() {
     const tocToggle = document.querySelector('.toc-toggle');
     const tocSidebar = document.getElementById('toc-sidebar');
     const content = document.getElementById('content');
+
+    // 从localStorage获取目录状态,默认为不可见
+    const isTocVisible = localStorage.getItem('tocVisible') === 'true';
     
-    // 从localStorage获取目录状态
-    const isTocCollapsed = localStorage.getItem('tocCollapsed') === 'true';
-    
-    if (isTocCollapsed) {
+    // 设置初始状态
+    if (isTocVisible) {
+        tocSidebar.classList.add('visible');
+        content.classList.add('with-toc');
+    } else {
         tocSidebar.classList.remove('visible');
         content.classList.remove('with-toc');
-        tocToggle.classList.add('collapsed');
+    }
+    
+    // 初始化切换按钮状态
+    if (content.style.display !== 'none') {
+        tocToggle.classList.add('show');
     }
     
     tocToggle.addEventListener('click', () => {
@@ -146,13 +154,11 @@ function setupTocToggle() {
         if (isVisible) {
             tocSidebar.classList.remove('visible');
             content.classList.remove('with-toc');
-            tocToggle.classList.add('collapsed');
-            localStorage.setItem('tocCollapsed', 'true');
+            localStorage.setItem('tocVisible', 'false');
         } else {
             tocSidebar.classList.add('visible');
             content.classList.add('with-toc');
-            tocToggle.classList.remove('collapsed');
-            localStorage.setItem('tocCollapsed', 'false');
+            localStorage.setItem('tocVisible', 'true');
         }
     });
 }
@@ -169,12 +175,17 @@ async function loadArticle(filename) {
     // 重置容器状态
     content.style.display = 'block';
     content.style.visibility = 'visible';
-    content.classList.add('with-toc');
     articlesList.style.display = 'none';
-    tocToggle.classList.add('show');
     
-    // 确保大纲栏可见
-    tocSidebar.classList.add('visible');
+    // 根据localStorage状态初始化目录
+    const isTocVisible = localStorage.getItem('tocVisible') === 'true';
+    if (isTocVisible) {
+        tocSidebar.classList.add('visible');
+        content.classList.add('with-toc');
+    }
+    
+    // 显示目录切换按钮
+    tocToggle.classList.add('show');
 
     // 滚动到页面顶部和动画效果
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -374,12 +385,17 @@ function backToHome() {
   const content = document.getElementById('content');
   const tocSidebar = document.getElementById('toc-sidebar');
   const tocToggle = document.querySelector('.toc-toggle');
+  const articlesList = document.getElementById('articles-list-container');
   
+  // 隐藏文章内容和目录
   content.style.display = 'none';
   content.style.visibility = 'hidden';
   content.classList.remove('with-toc');
   tocSidebar.classList.remove('visible');
   tocToggle.classList.remove('show');
+  
+  // 显示文章列表
+  articlesList.style.display = 'block';
   
   // 显示文章列表
   document.getElementById('articles-list').style.display = 'block';
