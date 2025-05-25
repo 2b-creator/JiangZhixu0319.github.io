@@ -186,13 +186,13 @@ async function loadArticle(filename) {
     
     // 显示目录切换按钮
     tocToggle.classList.add('show');
-
+    
     // 滚动到页面顶部和动画效果
     window.scrollTo({ top: 0, behavior: 'smooth' });
     content.style.opacity = '0';
     content.style.transform = 'translateY(20px)';
-  
-  // 加载并渲染文章内容
+
+    // 加载并渲染文章内容
     const response = await fetch(`./articles/${filename}`, {
       headers: {
         'Cache-Control': 'max-age=3600'
@@ -214,7 +214,9 @@ async function loadArticle(filename) {
           return `<p class="animate-in">${text}</p>`;
         },
         code(code, language) {
-          return `<pre class="animate-in"><code class="hljs ${language}">${code}</code></pre>`;
+          // 转义代码块中的HTML特殊字符
+          const escapedCode = code.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          return `<pre class="animate-in"><code class="hljs ${language}">${escapedCode}</code></pre>`;
         }
       };
 
