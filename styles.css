@@ -261,6 +261,7 @@ body {
     margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -527,10 +528,10 @@ body {
 /* 大纲侧边栏样式 */
 #toc-sidebar {
     position: fixed;
-    top: 100px;
+    top: 160px; /* 与文章顶部对齐：margin-top(20px) + padding(40px) = 60px */
     left: 0;
     width: 280px;
-    height: calc(100vh - 100px);
+    height: calc(100vh - 80px); /* 根据新的top值调整高度 */
     overflow-y: auto;
     padding: 20px;
     background: var(--card-background);
@@ -540,6 +541,7 @@ body {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateX(-100%);
     border-right: 1px solid var(--border-color);
+    padding-right: 30px; /* 增加右侧内边距 */
 }
 
 .toc-toggle {
@@ -572,10 +574,12 @@ body {
 
 #toc-sidebar.visible ~ .toc-toggle {
     left: 280px;
+    border-radius: 6px; /* 展开时改为完全圆角 */
 }
 
 #toc-sidebar:not(.visible) ~ .toc-toggle {
     left: 0;
+    border-radius: 0 6px 6px 0; /* 收起时保持右侧圆角 */
 }
 
 .toc-toggle:hover {
@@ -618,11 +622,13 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     border-radius: 12px;
     margin-top: 20px;
+    margin-left: calc((100% - 800px) / 2); /* 默认居中 */
     will-change: margin;
 }
 
-#content.with-toc {
-    margin-left: 320px;
+#toc-sidebar.visible ~ #content {
+    /* 计算大纲栏右侧到内容左侧的距离，如果距离小于40px则移动内容，并且确保至少有40px的间距 */
+    margin-left: max(360px, calc((100% - 800px) / 2));
     margin-right: 40px;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -647,8 +653,8 @@ body {
         background: rgba(255, 255, 255, 0.9);
     }
     
-    #content.with-toc {
-        margin-left: 20px;
+    #content {
+        margin-left: 20px !important; /* 在小屏幕上重置左边距 */
         margin-right: 20px;
         transition: margin 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
