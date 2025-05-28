@@ -1123,7 +1123,49 @@ img.lazy-load.loaded {
   padding: 2rem;
 }
 
-.loading-indicator.active i {
-  color: var(--primary-color);
-  font-size: 2rem;
+/* 分享按钮样式 */
+.share-button {
+  position: fixed;
+  top: 80px; /* 距离顶部的距离，为了避免与标题重叠 */
+  right: 20px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  transition: transform 0.2s var(--transition-timing);
+  z-index: 1000;
+}
+
+.share-button:hover {
+  transform: scale(1.1);
+}
+
+/* 分享提示样式 */
+.share-tooltip {
+  position: fixed;
+  top: 140px; /* 在分享按钮下方显示 */
+  right: 20px;
+  background-color: var(--card-background);
+  color: var(--text-color);
+  padding: 10px 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  font-size: 14px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+}
+
+.share-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
