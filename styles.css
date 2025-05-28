@@ -1169,3 +1169,50 @@ img.lazy-load.loaded {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* 复制全文按钮样式 */
+.copy-full-button {
+  position: fixed;
+  top: 80px;
+  right: 90px; /* 放在分享按钮旁边 */
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  transition: transform 0.2s var(--transition-timing);
+  z-index: 1000;
+}
+
+.copy-full-button:hover {
+  transform: scale(1.1);
+}
+
+/* 调整分享按钮和复制全文按钮的提示框样式 */
+.copy-tooltip {
+  position: fixed;
+  top: 140px;
+  right: 20px;
+  background-color: var(--card-background);
+  color: var(--text-color);
+  padding: 10px 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  font-size: 14px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+}
+
+.copy-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}

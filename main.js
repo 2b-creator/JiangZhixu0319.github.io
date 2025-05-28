@@ -32,9 +32,9 @@ async function loadArticlesList() {
   const contentElement = document.getElementById('content');
   const articlesListContainer = document.getElementById('articles-list-container');
   const paginationContainer = document.getElementById('pagination-container');
-  
-  // 隐藏分享按钮
+    // 隐藏分享按钮和复制全文按钮
   toggleShareButton(false);
+  toggleCopyFullButton(false);
   
   try {    
     // 显示加载动画
@@ -184,10 +184,11 @@ async function loadArticle(filename) {
     if (loadingIndicator) {
       loadingIndicator.style.display = 'none';
       loadingIndicator.classList.remove('active');
-    }
-      // 初始化分享按钮，传入当前文章的文件名
+    }      // 初始化分享按钮和复制全文按钮
     setupShareButton(filename);
     toggleShareButton(true);
+    setupCopyFullButton(filename);
+    toggleCopyFullButton(true);
     
     // 重置容器状态
     content.style.display = 'block';
@@ -433,6 +434,41 @@ function toggleShareButton(show) {
   const shareButton = document.getElementById('share-button');
   if (shareButton) {
     shareButton.style.display = show ? 'flex' : 'none';
+  }
+}
+
+// 复制全文功能
+function setupCopyFullButton(articleFilename) {
+  const copyFullButton = document.getElementById('copy-full-button');
+  const copyTooltip = document.getElementById('copy-tooltip');
+  let tooltipTimeout;
+
+  if (!copyFullButton || !copyTooltip) return;
+  copyFullButton.addEventListener('click', async () => {
+    try {
+      // 获取当前文章对应的markdown文件内容
+      const response = await fetch(`./articles/${articleFilename}`);
+      if (!response.ok) throw new Error('无法获取文章原始内容');
+      const markdownText = await response.text();
+      await navigator.clipboard.writeText(markdownText);
+      
+      copyTooltip.classList.add('visible');
+      
+      clearTimeout(tooltipTimeout);
+      tooltipTimeout = setTimeout(() => {
+        copyTooltip.classList.remove('visible');
+      }, 3000);
+    } catch (err) {
+      console.error('复制全文失败:', err);
+      alert('复制全文失败，请手动选择文本复制');
+    }
+  });
+}
+
+function toggleCopyFullButton(show) {
+  const copyFullButton = document.getElementById('copy-full-button');
+  if (copyFullButton) {
+    copyFullButton.style.display = show ? 'flex' : 'none';
   }
 }
 
