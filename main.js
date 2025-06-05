@@ -495,6 +495,10 @@ function backToHome() {
   document.getElementById('articles-list').style.display = 'block';
   document.getElementById('pagination-container').style.display = 'block';
   
+  // 隐藏分享按钮和复制全文按钮
+  toggleShareButton(false);
+  toggleCopyFullButton(false);
+  
   // 滚动到页面顶部
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
