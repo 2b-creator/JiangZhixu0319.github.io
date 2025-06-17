@@ -32,12 +32,13 @@ async function loadArticlesList() {
   const contentElement = document.getElementById('content');
   const articlesListContainer = document.getElementById('articles-list-container');
   const paginationContainer = document.getElementById('pagination-container');
-  const loadingIndicator = document.querySelector('.loading-indicator');
+    // 隐藏分享按钮和复制全文按钮
+  toggleShareButton(false);
+  toggleCopyFullButton(false);
   
   try {    
     // 显示加载动画
-    loadingIndicator.style.display = 'block';
-    loadingIndicator.classList.add('active');
+    toggleLoadingIndicator(true);
     
     // 确保文章列表容器存在
     const articlesList = document.getElementById('articles-list');
@@ -85,17 +86,20 @@ async function loadArticlesList() {
     // 初始化 Intersection Observer
     if (!performanceOptimizations.observer) {
       initIntersectionObserver();
-    }
-
-    setupPagination();
+    }    setupPagination();
     updateArticlesDisplay();
     
     // 添加页面过渡动画
     document.body.classList.add('page-loaded');
+    
+    // 隐藏加载指示器
+    toggleLoadingIndicator(false);
 
-    return files;
-  } catch (error) {
+    return files;  } catch (error) {
     console.error('加载文章列表失败:', error);
+    
+    // 隐藏加载指示器
+    toggleLoadingIndicator(false);
     
     // 显示错误信息
     const errorElement = ErrorHandler.createErrorElement(
@@ -116,6 +120,9 @@ async function loadArticlesList() {
     }
 
     throw error;
+  } finally {
+    // 隐藏加载指示器
+    toggleLoadingIndicator(false);
   }
 }
 
@@ -131,14 +138,22 @@ function setupTocToggle() {
     const tocToggle = document.querySelector('.toc-toggle');
     const tocSidebar = document.getElementById('toc-sidebar');
     const content = document.getElementById('content');
+
+    // 从localStorage获取目录状态,默认为不可见
+    const isTocVisible = localStorage.getItem('tocVisible') === 'true';
     
-    // 从localStorage获取目录状态
-    const isTocCollapsed = localStorage.getItem('tocCollapsed') === 'true';
-    
-    if (isTocCollapsed) {
+    // 设置初始状态
+    if (isTocVisible) {
+        tocSidebar.classList.add('visible');
+        content.classList.add('with-toc');
+    } else {
         tocSidebar.classList.remove('visible');
         content.classList.remove('with-toc');
-        tocToggle.classList.add('collapsed');
+    }
+    
+    // 初始化切换按钮状态
+    if (content.style.display !== 'none') {
+        tocToggle.classList.add('show');
     }
     
     tocToggle.addEventListener('click', () => {
@@ -146,13 +161,11 @@ function setupTocToggle() {
         if (isVisible) {
             tocSidebar.classList.remove('visible');
             content.classList.remove('with-toc');
-            tocToggle.classList.add('collapsed');
-            localStorage.setItem('tocCollapsed', 'true');
+            localStorage.setItem('tocVisible', 'false');
         } else {
             tocSidebar.classList.add('visible');
             content.classList.add('with-toc');
-            tocToggle.classList.remove('collapsed');
-            localStorage.setItem('tocCollapsed', 'false');
+            localStorage.setItem('tocVisible', 'true');
         }
     });
 }
@@ -165,23 +178,42 @@ async function loadArticle(filename) {
     const articlesList = document.getElementById('articles-list-container');
     const tocSidebar = document.getElementById('toc-sidebar');
     const tocToggle = document.querySelector('.toc-toggle');
+    const loadingIndicator = document.querySelector('.loading-indicator');
+    
+    // 确保加载指示器隐藏
+    if (loadingIndicator) {
+      loadingIndicator.style.display = 'none';
+      loadingIndicator.classList.remove('active');
+    }      // 初始化分享按钮和复制全文按钮
+    setupShareButton(filename);
+    toggleShareButton(true);
+    setupCopyFullButton(filename);
+    toggleCopyFullButton(true);
     
     // 重置容器状态
     content.style.display = 'block';
     content.style.visibility = 'visible';
-    content.classList.add('with-toc');
     articlesList.style.display = 'none';
+    
+    // 根据localStorage状态初始化目录
+    const isTocVisible = localStorage.getItem('tocVisible') === 'true';
+    if (isTocVisible) {
+        tocSidebar.classList.add('visible');
+        content.classList.add('with-toc');
+    }
+    
+    // 显示目录切换按钮
     tocToggle.classList.add('show');
     
-    // 确保大纲栏可见
-    tocSidebar.classList.add('visible');
-
     // 滚动到页面顶部和动画效果
     window.scrollTo({ top: 0, behavior: 'smooth' });
     content.style.opacity = '0';
     content.style.transform = 'translateY(20px)';
-  
-  // 加载并渲染文章内容
+
+    // 显示分享按钮
+    toggleShareButton(true);
+    
+    // 加载并渲染文章内容
     const response = await fetch(`./articles/${filename}`, {
       headers: {
         'Cache-Control': 'max-age=3600'
@@ -203,7 +235,9 @@ async function loadArticle(filename) {
           return `<p class="animate-in">${text}</p>`;
         },
         code(code, language) {
-          return `<pre class="animate-in"><code class="hljs ${language}">${code}</code></pre>`;
+          // 转义代码块中的HTML特殊字符
+          const escapedCode = code.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          return `<pre class="animate-in"><code class="hljs ${language}">${escapedCode}</code></pre>`;
         }
       };
 
@@ -259,9 +293,7 @@ async function loadArticle(filename) {
       
       // 添加目录滚动监听
       setupTOCScroll();
-    }
-
-    // 代码高亮优化
+    }    // 代码高亮优化
     hljs.highlightAll();
     
     // 添加代码块复制按钮
@@ -269,9 +301,12 @@ async function loadArticle(filename) {
     
     // 懒加载图片
     setupImageLazyLoading();
-
-  } catch (error) {
+    
+    // 文章加载完成，隐藏加载指示器
+    toggleLoadingIndicator(false);  } catch (error) {
     console.error(error);
+    // 出错时隐藏加载指示器
+    toggleLoadingIndicator(false);
     document.getElementById('content').innerHTML = ErrorHandler.createErrorElement(ErrorHandler.formatError('ARTICLE_LOAD_ERROR', {
       filename,
       error: error.message
@@ -367,6 +402,76 @@ function setupImageLazyLoading() {
   });
 }
 
+// 分享功能
+function setupShareButton(articleFilename) {
+  const shareButton = document.getElementById('share-button');
+  const shareTooltip = document.getElementById('share-tooltip');
+  let tooltipTimeout;
+
+  if (!shareButton || !shareTooltip) return;
+
+  shareButton.addEventListener('click', async () => {
+    try {
+      // 构建文章的完整URL
+      const baseUrl = window.location.origin + window.location.pathname;
+      const url = `${baseUrl}?article=${encodeURIComponent(articleFilename)}`;
+      await navigator.clipboard.writeText(url);
+      
+      shareTooltip.classList.add('visible');
+      
+      clearTimeout(tooltipTimeout);
+      tooltipTimeout = setTimeout(() => {
+        shareTooltip.classList.remove('visible');
+      }, 3000);
+    } catch (err) {
+      console.error('复制链接失败:', err);
+      alert('复制链接失败，请手动复制浏览器地址栏中的链接');
+    }
+  });
+}
+
+function toggleShareButton(show) {
+  const shareButton = document.getElementById('share-button');
+  if (shareButton) {
+    shareButton.style.display = show ? 'flex' : 'none';
+  }
+}
+
+// 复制全文功能
+function setupCopyFullButton(articleFilename) {
+  const copyFullButton = document.getElementById('copy-full-button');
+  const copyTooltip = document.getElementById('copy-tooltip');
+  let tooltipTimeout;
+
+  if (!copyFullButton || !copyTooltip) return;
+  copyFullButton.addEventListener('click', async () => {
+    try {
+      // 获取当前文章对应的markdown文件内容
+      const response = await fetch(`./articles/${articleFilename}`);
+      if (!response.ok) throw new Error('无法获取文章原始内容');
+      const markdownText = await response.text();
+      await navigator.clipboard.writeText(markdownText);
+      
+      copyTooltip.classList.add('visible');
+      
+      clearTimeout(tooltipTimeout);
+      tooltipTimeout = setTimeout(() => {
+        copyTooltip.classList.remove('visible');
+      }, 3000);
+    } catch (err) {
+      console.error('复制全文失败:', err);
+      alert('复制全文失败，请手动选择文本复制');
+    }
+  });
+}
+
+function toggleCopyFullButton(show) {
+  const copyFullButton = document.getElementById('copy-full-button');
+  if (copyFullButton) {
+    copyFullButton.style.display = show ? 'flex' : 'none';
+  }
+}
+
 // 返回主页函数
 function backToHome() {
   document.body.classList.add('home');
@@ -374,7 +479,9 @@ function backToHome() {
   const content = document.getElementById('content');
   const tocSidebar = document.getElementById('toc-sidebar');
   const tocToggle = document.querySelector('.toc-toggle');
+  const articlesList = document.getElementById('articles-list-container');
   
+  // 隐藏文章内容和目录
   content.style.display = 'none';
   content.style.visibility = 'hidden';
   content.classList.remove('with-toc');
@@ -382,11 +489,49 @@ function backToHome() {
   tocToggle.classList.remove('show');
   
   // 显示文章列表
+  articlesList.style.display = 'block';
+  
+  // 显示文章列表
   document.getElementById('articles-list').style.display = 'block';
   document.getElementById('pagination-container').style.display = 'block';
   
+  // 隐藏分享按钮和复制全文按钮
+  toggleShareButton(false);
+  toggleCopyFullButton(false);
+  
   // 滚动到页面顶部
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 处理URL参数
+function handleURLParameters() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const articleParam = urlParams.get('article');
+  
+  // 显示加载指示器
+  toggleLoadingIndicator(true);
+  
+  if (articleParam) {
+    // 如果URL中包含文章参数，直接加载对应文章
+    loadArticle(decodeURIComponent(articleParam));
+  } else {
+    // 否则加载文章列表
+    loadArticlesList();
+  }
+}
+
+// 管理加载指示器的显示状态
+function toggleLoadingIndicator(show) {
+  const loadingIndicator = document.querySelector('.loading-indicator');
+  if (loadingIndicator) {
+    if (show) {
+      loadingIndicator.style.display = 'block';
+      loadingIndicator.classList.add('active');
+    } else {
+      loadingIndicator.style.display = 'none';
+      loadingIndicator.classList.remove('active');
+    }
+  }
 }
 
 // DOM就绪检查和初始化
@@ -403,6 +548,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const articlesListContainer = document.getElementById('articles-list-container');
     
     try {
+        // 处理URL参数，决定是加载文章还是文章列表
+        handleURLParameters();
+        
         // 设置加载超时
         const timeoutPromise = new Promise((_, reject) => {
             setTimeout(() => reject(new Error('加载超时')), 5000);
@@ -423,6 +571,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('初始化失败:', error);
         loadingIndicator.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${error.message || '加载失败'}，请检查网络连接`;
     }
+
+    // 处理URL参数，决定是加载文章还是文章列表
+    handleURLParameters();
 });
 
 // 分页功能实现
